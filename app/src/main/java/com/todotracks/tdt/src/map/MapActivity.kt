@@ -4,6 +4,7 @@ import android.content.Context
 import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
+import android.util.Log
 import android.widget.TextView
 import android.widget.Toast
 import com.naver.maps.map.LocationTrackingMode
@@ -13,12 +14,30 @@ import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.util.FusedLocationSource
 import com.todotracks.tdt.kotlin.config.BaseActivity
 import com.todotracks.tdt.databinding.ActivityMapBinding
+import com.todotracks.tdt.src.map.model.SearchResponse
+import com.todotracks.tdt.src.map.service.SearchService
+import com.todotracks.tdt.src.map.service.SearchView
 import java.io.IOException
 import java.util.*
+import android.content.Intent
+import android.view.View
+import androidx.annotation.NonNull
+import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.overlay.InfoWindow
+import com.naver.maps.map.overlay.Marker
+import com.todotracks.tdt.MainActivity
+import com.todotracks.tdt.R
+import com.todotracks.tdt.src.check_map.pointAdapter
+import kotlin.collections.ArrayList
+import com.naver.maps.map.overlay.Overlay
+
+
+
+
 
 class MapActivity : BaseActivity<ActivityMapBinding>(ActivityMapBinding::inflate),
     OnMapReadyCallback,
-    NaverMap.OnCameraChangeListener, NaverMap.OnCameraIdleListener {
+    NaverMap.OnCameraChangeListener, NaverMap.OnCameraIdleListener, SearchView {
     lateinit private var mapView: MapView
     lateinit private var locationSource: FusedLocationSource
     lateinit private var naverMap: NaverMap
@@ -28,6 +47,18 @@ class MapActivity : BaseActivity<ActivityMapBinding>(ActivityMapBinding::inflate
     var mTvPm10: TextView? = null
     var mSido: String? = null
 
+    var search_list = ArrayList<String>()
+    var list = ArrayList<LatLng>()
+
+    // 지도상에 마커 표시
+    val marker1 = Marker()
+    val marker2 = Marker()
+    val marker3 = Marker()
+    val marker4 = Marker()
+    val marker5 = Marker()
+
+    // InfoWindow
+    private var infoWindow: InfoWindow? = InfoWindow()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +66,14 @@ class MapActivity : BaseActivity<ActivityMapBinding>(ActivityMapBinding::inflate
         mapView!!.onCreate(savedInstanceState)
         mapView!!.getMapAsync(this)
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
+
+        binding.searchBtn.setOnClickListener {
+            var search: String = binding.search.text.toString()
+            if(search != null){
+                SearchService(this).tryGetSearch(search)
+            }
+        }
+
 
         // 카메라가 멈출시
 
@@ -60,7 +99,6 @@ class MapActivity : BaseActivity<ActivityMapBinding>(ActivityMapBinding::inflate
 //            setResult(RESULT_OK, intent)
 //            finish()
 //        }
-
     }
 
     //위치정보 권한 설정
@@ -97,10 +135,42 @@ class MapActivity : BaseActivity<ActivityMapBinding>(ActivityMapBinding::inflate
 
         var cameraPosition = naverMap.cameraPosition
         naverMap.addOnCameraIdleListener {
-            var address = getAddress(this, cameraPosition.target.latitude, cameraPosition.target.longitude)
-            showCustomToast("현재 주소 : "+address)
+//            var address = getAddress(this, cameraPosition.target.latitude, cameraPosition.target.longitude)
+//            showCustomToast("현재 주소 : "+address)
 //            binding.locMainTxt.setText(address)
 //            binding.locSubTxt.setText(address)
+        }
+
+        if(list.size != 0){
+            marker1.map = naverMap
+            marker1.onClickListener = Overlay.OnClickListener {
+                infoWindow_present(marker1)
+                false
+            }
+
+            marker2.map = naverMap
+            marker2.onClickListener = Overlay.OnClickListener {
+                infoWindow_present(marker2)
+                false
+            }
+
+            marker3.map = naverMap
+            marker3.onClickListener = Overlay.OnClickListener {
+                infoWindow_present(marker3)
+                false
+            }
+
+            marker4.map = naverMap
+            marker4.onClickListener = Overlay.OnClickListener {
+                infoWindow_present(marker4)
+                false
+            }
+
+            marker5.map = naverMap
+            marker5.onClickListener = Overlay.OnClickListener {
+                infoWindow_present(marker5)
+                false
+            }
         }
     }
 
@@ -114,9 +184,9 @@ class MapActivity : BaseActivity<ActivityMapBinding>(ActivityMapBinding::inflate
     override fun onCameraIdle() {
         if (mIsCameraAnimated) {
 //            binding.mark.setImageResource(R.drawable.ic_map_mark_adobespark2)
-            val cameraPosition = naverMap.getCameraPosition()
-            var address = getAddress(this, cameraPosition.target.latitude, cameraPosition.target.longitude)
-            showCustomToast("현재 주소 : "+address)
+//            val cameraPosition = naverMap.getCameraPosition()
+//            var address = getAddress(this, cameraPosition.target.latitude, cameraPosition.target.longitude)
+//            showCustomToast("현재 주소 : "+address)
 //            binding.locMainTxt.text = address
 //            binding.locSubTxt.text = address
 //            binding.locMainTxt.setText(address.toString())
@@ -148,5 +218,66 @@ class MapActivity : BaseActivity<ActivityMapBinding>(ActivityMapBinding::inflate
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
+    }
+
+    override fun onGetSearchSuccess(response: SearchResponse) {
+//        showCustomToast(response)
+        search_list.clear()
+        list.clear()
+        if(response.items.size != 0){
+            for(i in 0..response.items.size-1){
+                search_list.add(response.items.get(i).address!!)
+            }
+
+            for(i in 0..search_list.size-1){
+                var result = Geocoder(this).getFromLocationName(search_list.get(i), 1)
+                var resultGeo = LatLng(result.get(0).latitude, result.get(0).longitude)
+                list.add(resultGeo)
+            }
+
+//        showCustomToast(list.toString())
+            marker1.position = list.get(0)
+            marker2.position = list.get(1)
+            marker3.position = list.get(2)
+            marker4.position = list.get(3)
+            marker5.position = list.get(4)
+        }
+        onMapReady(naverMap)
+    }
+
+    override fun onGetSearchFailure(message: String) {
+        TODO("Not yet implemented")
+    }
+
+    fun infoWindow_present(maker: Marker) {
+        infoWindow!!.setAdapter(object : InfoWindow.DefaultTextAdapter(application) {
+            override fun getText(infoWindow: InfoWindow): CharSequence {
+                return "이 위치로 하기"
+            }
+        })
+
+        // info window custom 연결
+//        val adapter = pointAdapter(this@MapCheckActivity, binding.root, true)
+//        infoWindow!!.setAdapter(adapter)
+
+        //인포창의 우선순위
+        infoWindow!!.setZIndex(10)
+        //투명도 조정
+        infoWindow!!.setAlpha(0.9f)
+        //인포창 표시
+        infoWindow!!.open(maker)
+
+        infoWindow!!.setOnClickListener {
+            var text = getSharedPreferences("tdt", MODE_PRIVATE)
+            var editor = text.edit()
+            editor.putLong("latitude", maker.position.latitude.toLong())
+            editor.putLong("longitude", maker.position.longitude.toLong())
+            var address = getAddress(this, maker.position.latitude, maker.position.longitude)
+            editor.putString("address", address)
+            editor.commit()
+
+            finish()
+            true
+        }
     }
 }
