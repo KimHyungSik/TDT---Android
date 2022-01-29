@@ -3,6 +3,7 @@ package com.todotracks.tdt.src.user_settings
 import android.content.Intent
 import android.os.Bundle
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.todotracks.tdt.MainActivity
 import com.todotracks.tdt.R
 import com.todotracks.tdt.databinding.ActivityMainBinding
 import com.todotracks.tdt.databinding.ActivityUserSettingBinding
@@ -16,6 +17,11 @@ class UserSettingActivity : BaseActivity<ActivityUserSettingBinding>(ActivityUse
 
         binding.settingOkBtn.setOnClickListener {
             var intent = Intent(this, MapActivity::class.java)
+            startActivity(intent)
+        }
+
+        binding.settingBtn.setOnClickListener {
+            var intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
     }
