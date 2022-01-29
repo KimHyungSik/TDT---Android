@@ -264,7 +264,6 @@ class MapActivity : BaseActivity<ActivityMapBinding>(ActivityMapBinding::inflate
             var address = getAddress(this, maker.position.latitude, maker.position.longitude)
             editor.putString("address", address)
             editor.commit()
-
             finish()
             true
         }
