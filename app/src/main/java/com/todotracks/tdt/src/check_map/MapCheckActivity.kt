@@ -51,6 +51,9 @@ class MapCheckActivity : BaseActivity<ActivityMapCheckBinding>(ActivityMapCheckB
     var mTvPm10: TextView? = null
     var mSido: String? = null
 
+    var latitude: Double? = null
+    var longitude: Double? = null
+
     // 지도상에 마커 표시
     val marker = Marker()
 
@@ -63,8 +66,12 @@ class MapCheckActivity : BaseActivity<ActivityMapCheckBinding>(ActivityMapCheckB
         mapView!!.onCreate(savedInstanceState)
         mapView!!.getMapAsync(this)
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
-
-        marker.position = LatLng(37.50133795399799, 127.02662695566022)
+        val extras = intent.extras
+        extras?.let {
+            latitude = extras.getDouble("latitude")
+            longitude = extras.getDouble("longitude")
+        }
+        marker.position = LatLng(latitude ?: 37.50133795399799, longitude ?: 127.02662695566022)
 
         mapView.getMapAsync(this)
 
@@ -124,7 +131,8 @@ class MapCheckActivity : BaseActivity<ActivityMapCheckBinding>(ActivityMapCheckB
 //        var cameraPosition = naverMap.cameraPosition
 
         naverMap.addOnCameraIdleListener {
-            var address = getAddress(this, cameraPosition.target.latitude, cameraPosition.target.longitude)
+            var address =
+                getAddress(this, cameraPosition.target.latitude, cameraPosition.target.longitude)
 //            showCustomToast("현재 주소 : "+address)
         }
 
@@ -141,15 +149,15 @@ class MapCheckActivity : BaseActivity<ActivityMapCheckBinding>(ActivityMapCheckB
         if (mIsCameraAnimated) {
 //            binding.mark.setImageResource(R.drawable.ic_map_mark_adobespark2)
             val cameraPosition = naverMap.getCameraPosition()
-            var address = getAddress(this, cameraPosition.target.latitude, cameraPosition.target.longitude)
+            var address =
+                getAddress(this, cameraPosition.target.latitude, cameraPosition.target.longitude)
 
-            var result = withinSightMarker(cameraPosition.target,marker.position)
+            var result = withinSightMarker(cameraPosition.target, marker.position)
             showCustomToast(result.toString())
-            if(result == true){
+            if (result == true) {
                 infoWindow_present()
-            }
-            else{
-                if(infoWindow != null){
+            } else {
+                if (infoWindow != null) {
                     infoWindow!!.close()
                 }
             }

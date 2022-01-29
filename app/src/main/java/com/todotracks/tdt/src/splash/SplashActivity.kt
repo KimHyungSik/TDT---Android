@@ -28,7 +28,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(ActivitySplashBinding
         LoginService(this).tryPostLogin(loginReq)
 
         Handler(Looper.getMainLooper()).postDelayed({
-            startActivity(Intent(this, MapActivity::class.java))
+            startActivity(Intent(this, MainActivity::class.java))
             finish()
         }, 1500)
     }
@@ -40,8 +40,6 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(ActivitySplashBinding
         var editor = text.edit()
         editor.putString("X-MEMBER-NO", userId.toString())
         editor.commit()
-        var intent = Intent(this, MapActivity::class.java)
-        startActivity(intent)
     }
 
     override fun onPostLoginFailure(message: String) {

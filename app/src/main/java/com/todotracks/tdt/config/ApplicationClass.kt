@@ -13,12 +13,6 @@ import java.util.concurrent.TimeUnit
 class ApplicationClass : Application() {
     val API_URL = "http://15.164.36.20:8080"
 
-    // 테스트 서버 주소
-    // val API_URL = "http://dev-api.test.com/"
-
-    // 실 서버 주소
-    // val API_URL = "http://api.test.com/"
-
     // 코틀린의 전역변수 문법
     companion object {
         // 만들어져있는 SharedPreferences 를 사용해야합니다. 재생성하지 않도록 유념해주세요
@@ -48,7 +42,6 @@ class ApplicationClass : Application() {
             .connectTimeout(5000, TimeUnit.MILLISECONDS)
             // 로그캣에 okhttp.OkHttpClient로 검색하면 http 통신 내용을 보여줍니다.
             .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-            .addInterceptor(RequestHeaderInterceptor())
             .addNetworkInterceptor(XAccessTokenInterceptor()) // JWT 자동 헤더 전송
             .build()
 
