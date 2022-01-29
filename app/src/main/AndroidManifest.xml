@@ -33,6 +33,10 @@
         <activity
             android:name="com.todotracks.tdt.src.map.MapActivity"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name="com.todotracks.tdt.src.check_map.MapCheckActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
         <meta-data
             android:name="com.naver.maps.map.CLIENT_ID"
             android:value="7qf52r4ces" />

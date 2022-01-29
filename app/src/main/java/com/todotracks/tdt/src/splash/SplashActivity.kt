@@ -34,7 +34,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(ActivitySplashBinding
     override fun onPostLoginSuccess(response: loginResponse) {
         var text = getSharedPreferences("tdt", MODE_PRIVATE)
         var editor = text.edit()
-        editor.putInt("member_no", response.member_no)
+        editor.putString("X-ACCESS-TOKEN", response.member_no.toString())
         editor.commit()
     }
 
