@@ -42,9 +42,6 @@
         <meta-data
             android:name="com.naver.maps.map.CLIENT_ID"
             android:value="7qf52r4ces" />
-        <activity
-            android:name="com.todotracks.tdt.src.user_settings.UserSettingActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>
