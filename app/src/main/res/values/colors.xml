@@ -22,4 +22,6 @@
     <color name="whiteForBackground">#FFFFFF</color>
     <color name="blackForText">#4a4a4a</color>
     <color name="redForText">#d9534f</color>
+
+    <color name="background_black">#1A2430</color>
 </resources>
