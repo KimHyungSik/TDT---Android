@@ -8,7 +8,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
-// 앱이 실행될때 1번만 실행이 됩니다.
+// 앱이 실행될때 1번만 실행이 됩니다.x
 class ApplicationClass : Application() {
     val API_URL = "http://52.79.239.168:8080"
 

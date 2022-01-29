@@ -18,6 +18,12 @@
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.TDT.NoActionBar">
+
+        </activity>
+        <activity
+            android:exported="true"
+            android:name=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -25,19 +31,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name="com.todotracks.tdt.src.map.MapActivity"
-            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <meta-data
             android:name="com.naver.maps.map.CLIENT_ID"
             android:value="7qf52r4ces" />
         <activity
             android:name="com.todotracks.tdt.src.user_settings.UserSettingActivity"
-            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
