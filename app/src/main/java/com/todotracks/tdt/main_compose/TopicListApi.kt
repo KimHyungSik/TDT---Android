@@ -2,6 +2,7 @@ package com.todotracks.tdt.main_compose
 
 import com.todotracks.tdt.dto.MainTopicsDto
 import com.todotracks.tdt.model.MainTopic
+import com.todotracks.tdt.model.SubTopic
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -13,4 +14,7 @@ interface TopicListApi {
 
     @POST("/api/travel/main-topics")
     suspend fun addMainTopics(@Body mainTopic: MainTopic) : Response<Unit>
+
+    @POST
+    suspend fun addSubTopics(@Body subTopic: SubTopic) : Response<Unit>
 }

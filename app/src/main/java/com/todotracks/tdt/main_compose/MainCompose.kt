@@ -7,13 +7,16 @@ import android.view.ViewGroup
 import androidx.compose.runtime.Composable
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.todotracks.tdt.main_compose.common.Screens
 import com.todotracks.tdt.databinding.FragmentMainTopicListBinding
 import com.todotracks.tdt.main_compose.main_topic_added.mainTopicAddedScreen
 import com.todotracks.tdt.main_compose.main_topic_list.mainTopicListScreen
+import com.todotracks.tdt.main_compose.sub_topic_added.subTopicAddedScreen
 import com.todotracks.tdt.ui.theme.TDTTheme
 
 class MainTopicListScreen : Fragment() {
@@ -28,10 +31,10 @@ class MainTopicListScreen : Fragment() {
     ): View {
         _binding = FragmentMainTopicListBinding.inflate(inflater, container, false)
         val view = binding.root
-        
+
         binding.composeView.setContent {
             val navController = rememberNavController()
-            TDTTheme{
+            TDTTheme {
                 NavigationGraph(navController)
             }
         }
@@ -45,13 +48,32 @@ class MainTopicListScreen : Fragment() {
 }
 
 @Composable
-fun NavigationGraph(navController: NavHostController){
-    NavHost(navController = navController,startDestination = Screens.MainTopicListScreen.url){
-        composable(Screens.MainTopicListScreen.url){
+fun NavigationGraph(navController: NavHostController) {
+    NavHost(navController = navController, startDestination = Screens.MainTopicListScreen.url) {
+        composable(Screens.MainTopicListScreen.url) {
             mainTopicListScreen(navController)
         }
-        composable(Screens.MainTopicAddedScreen.url){
+        composable(Screens.MainTopicAddedScreen.url) {
             mainTopicAddedScreen(navController)
+        }
+        composable(
+            Screens.SubTopicAddedScreen.url + "/{main_topic_id}/{main_topic_title}",
+            arguments = listOf(
+                navArgument(
+                    name = "main_topic_id"
+                ){
+                    type = NavType.IntType
+                },
+                navArgument(
+                    name = "main_topic_title"
+                ){
+                    type = NavType.StringType
+                }
+            )
+        ) {
+            val mainTopicId = it.arguments?.getInt("main_topic_id")
+            val mainTopicTitle = it.arguments?.getString("main_topic_title")
+            subTopicAddedScreen(navController, mainTopicId, mainTopicTitle)
         }
     }
 }

@@ -8,7 +8,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -16,6 +16,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.todotracks.tdt.main_compose.common.Screens
 import com.todotracks.tdt.ui.theme.Indigo
 
@@ -25,6 +27,8 @@ fun mainTopicListScreen(
     vm: MainTopicListViewModel = viewModel()
 ) {
     val fakeMainTopicList = vm.mainTopicDtoList.value
+    var isRefreshing by remember { mutableStateOf(false) }
+    val swipeRefreshState = rememberSwipeRefreshState(isRefreshing)
     Scaffold(
     ) {
         Column(
@@ -64,19 +68,24 @@ fun mainTopicListScreen(
                 shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
-                Column() {
+                Column {
                     Text(
                         text = "TITLE",
                         fontSize = 23.sp,
                         modifier = Modifier.padding(start = 17.dp, top = 20.dp),
                         fontWeight = FontWeight.Bold
                     )
-                    LazyColumn(
-                        modifier = Modifier.padding(bottom = 20.dp),
-                        verticalArrangement = Arrangement.spacedBy(17.dp),
+                    SwipeRefresh(
+                        state = rememberSwipeRefreshState(isRefreshing),
+                        onRefresh = { vm.getMainTopicList() },
                     ) {
-                        itemsIndexed(fakeMainTopicList) { index, mainTopic ->
-                            MainTopicItem(mainTopic, index, navController)
+                        LazyColumn(
+                            modifier = Modifier.padding(bottom = 20.dp),
+                            verticalArrangement = Arrangement.spacedBy(17.dp),
+                        ) {
+                            itemsIndexed(fakeMainTopicList) { index, mainTopic ->
+                                MainTopicItem(mainTopic, index, navController)
+                            }
                         }
                     }
                 }
