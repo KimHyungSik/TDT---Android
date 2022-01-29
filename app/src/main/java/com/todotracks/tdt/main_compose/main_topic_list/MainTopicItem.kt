@@ -1,6 +1,7 @@
 package com.todotracks.tdt.main_compose.main_topic_list
 
 import android.util.Log
+import androidx.compose.animation.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -17,6 +18,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -43,7 +45,7 @@ fun MainTopicItem(mainTopicDto: MainTopicDto, index: Int, navHostController: Nav
         ) {
             Text(
                 modifier = Modifier.padding(start = 22.dp),
-                text = "$index",
+                text = "${index + 1}",
                 textAlign = TextAlign.Center,
                 color = Gray,
                 fontSize = 22.sp,
@@ -61,7 +63,7 @@ fun MainTopicItem(mainTopicDto: MainTopicDto, index: Int, navHostController: Nav
 
             IconButton(
                 onClick = {
-                    navHostController.navigate(Screens.SubTopicAddedScreen.url + "/${mainTopicDto.main_no}/${ mainTopicDto.title}")
+                    navHostController.navigate(Screens.SubTopicAddedScreen.url + "/${mainTopicDto.main_no}/${mainTopicDto.title}")
                 },
             ) {
                 Icon(
@@ -76,7 +78,9 @@ fun MainTopicItem(mainTopicDto: MainTopicDto, index: Int, navHostController: Nav
             if (show) {
                 MainTopicDateList(
                     mainTopicDto.date_list,
-                    navHostController
+                    navHostController,
+                    mainTopicDto.main_no,
+                    mainTopicDto.title
                 )
             }
         }
@@ -86,36 +90,51 @@ fun MainTopicItem(mainTopicDto: MainTopicDto, index: Int, navHostController: Nav
 @Composable
 fun MainTopicDateList(
     dateList: List<String>,
-    navHostController: NavController
+    navController: NavController,
+    mainTopicId: Int,
+    mainTopicTitle: String
 ) {
-    Column() {
-        dateList.forEachIndexed { index, s ->
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-
-                    }
-                    .padding(vertical = 8.dp)
-            ) {
-                Spacer(modifier = Modifier.width(23.dp))
-                Icon(
-                    Icons.Default.KeyboardArrowRight,
-                    contentDescription = "arrowforward",
-                    tint = GrayLight
-                )
-                Spacer(modifier = Modifier.width(6.dp))
-                Text(
-                    text = s
-                )
+    var visible by remember { mutableStateOf(true) }
+    val density = LocalDensity.current
+    AnimatedVisibility(
+        visible = visible,
+        enter = slideInVertically {
+            with(density) { -40.dp.roundToPx() }
+        } + expandVertically(
+            expandFrom = Alignment.Top
+        ),
+        exit = slideOutVertically() + shrinkVertically() + fadeOut()
+    ) {
+        Column() {
+            dateList.forEachIndexed { index, s ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            navController.navigate(Screens.SubTopicListScreen.url + "/$mainTopicId/$s/$mainTopicTitle")
+                        }
+                        .padding(vertical = 8.dp)
+                ) {
+                    Spacer(modifier = Modifier.width(23.dp))
+                    Icon(
+                        Icons.Default.KeyboardArrowRight,
+                        contentDescription = "arrowforward",
+                        tint = GrayLight
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = s
+                    )
+                }
+                if (index < dateList.size - 1)
+                    Divider(
+                        modifier = Modifier.padding(horizontal = 20.dp),
+                        color = GrayLight,
+                        thickness = 1.dp
+                    )
             }
-            if (index < dateList.size - 1)
-                Divider(
-                    modifier = Modifier.padding(horizontal = 20.dp),
-                    color = GrayLight,
-                    thickness = 1.dp
-                )
         }
     }
+
 
 }

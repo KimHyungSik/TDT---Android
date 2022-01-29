@@ -43,6 +43,9 @@ class MapActivity : BaseActivity<ActivityMapBinding>(ActivityMapBinding::inflate
     lateinit private var mapView: MapView
     lateinit private var locationSource: FusedLocationSource
     lateinit private var naverMap: NaverMap
+    private var title : String? = null
+    private var date : String? = null
+    private var mainId : Int? = null
 
     var mnaverMap: NaverMap? = null
     private var mIsCameraAnimated = false
@@ -77,6 +80,13 @@ class MapActivity : BaseActivity<ActivityMapBinding>(ActivityMapBinding::inflate
             if(search != null){
                 SearchService(this).tryGetSearch(search)
             }
+        }
+
+        val extras = intent.extras
+        extras?.let {
+            title = extras.getString("title")
+            date = extras.getString("date")
+            mainId = extras.getInt("mainId")
         }
 
         // 카메라가 멈출시

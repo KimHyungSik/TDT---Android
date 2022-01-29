@@ -9,8 +9,10 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -36,33 +38,30 @@ fun mainTopicListScreen(
                 .fillMaxSize()
                 .background(Indigo)
         ) {
-            Column(
+            Row(
                 modifier = Modifier
+                    .fillMaxWidth()
                     .fillMaxHeight(0.3f)
                     .fillMaxWidth(),
-                verticalArrangement = Arrangement.Center
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = "TITLE",
-                        color = Color.White,
-                        fontSize = 25.sp,
-                        modifier = Modifier.padding(start = 17.dp),
-                        fontWeight = FontWeight.Bold
-                    )
-                    Button(
-                        modifier = Modifier.padding(end = 15.dp),
-                        onClick = { navController.navigate(Screens.MainTopicAddedScreen.url) }) {
-                        Row {
-                            Icon(Icons.Default.AddCircle, contentDescription = "Added mainTopick")
-                            Text(text = "여행 추가")
-                        }
+                Text(
+                    text = "여행하세요",
+                    color = Color.White,
+                    fontSize = 25.sp,
+                    modifier = Modifier.padding(start = 17.dp),
+                    fontWeight = FontWeight.Bold
+                )
+                Button(
+                    modifier = Modifier.padding(end = 15.dp),
+                    onClick = { navController.navigate(Screens.MainTopicAddedScreen.url) }) {
+                    Row {
+                        Icon(Icons.Default.AddCircle, contentDescription = "Added mainTopick")
+                        Spacer(modifier = Modifier.width(7.dp))
+                        Text(text = "여행 추가")
                     }
                 }
-
             }
             Card(
                 shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
@@ -70,10 +69,11 @@ fun mainTopicListScreen(
             ) {
                 Column {
                     Text(
-                        text = "TITLE",
+                        text = "계획 중인 여행",
                         fontSize = 23.sp,
                         modifier = Modifier.padding(start = 17.dp, top = 20.dp),
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = FontFamily.Monospace
                     )
                     SwipeRefresh(
                         state = rememberSwipeRefreshState(isRefreshing),

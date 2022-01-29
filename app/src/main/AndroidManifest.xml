@@ -14,24 +14,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TDT">
         <activity
-            android:exported="true"
-            android:label="@string/app_name"
-            android:theme="@style/Theme.TDT.NoActionBar">
-
-        </activity>
-        <activity
-            android:name=".MainActivity"
+            android:name=".src.splash.SplashActivity"
             android:exported="true"
             android:theme="@style/AppTheme.NoActionBar"
             >
-            android:name=".src.splash.SplashActivity"
-            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:theme="@style/AppTheme.NoActionBar"
+            />
         <activity
             android:name="com.todotracks.tdt.src.map.MapActivity"
             android:theme="@style/AppTheme.NoActionBar" />

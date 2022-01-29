@@ -1,6 +1,10 @@
 package com.todotracks.tdt.main_compose.sub_topic_added
 
+import android.app.Activity
+import android.content.Intent
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,6 +19,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -26,16 +31,23 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.todotracks.tdt.main_compose.common.DatePickerview
 import com.todotracks.tdt.main_compose.component.datePickerTextView
+import com.todotracks.tdt.src.check_map.MapCheckActivity
+import com.todotracks.tdt.src.map.MapActivity
 import com.todotracks.tdt.ui.theme.Indigo
+import androidx.activity.result.contract.ActivityResultContracts.*
+import com.todotracks.tdt.ui.theme.Gray
+import com.todotracks.tdt.ui.theme.Orenge
 
 @ExperimentalComposeUiApi
 @Composable
 fun subTopicAddedScreen(
-    vm : SubTopicViewModel = viewModel(),
     navController: NavController,
-    mainTopicId : Int?,
-    mainTopicTitle : String?
+    mainTopicId: Int?,
+    mainTopicTitle: String?,
+    vm: SubTopicViewModel = viewModel()
 ) {
+    val context = LocalContext.current as Activity
+
     val keyboardController = LocalSoftwareKeyboardController.current
     var title by remember {
         mutableStateOf("")
@@ -66,7 +78,6 @@ fun subTopicAddedScreen(
                     tint = Color.White
                 )
             }
-
             Text(
                 text = mainTopicTitle ?: "여행 없음",
                 color = Color.White,
@@ -76,7 +87,6 @@ fun subTopicAddedScreen(
                     .align(Alignment.CenterStart),
                 fontWeight = FontWeight.Bold
             )
-
         }
         Column(
             Modifier
@@ -96,10 +106,27 @@ fun subTopicAddedScreen(
                 label = { Text("제목을 입력해주세요.") },
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(
-                    onDone = {keyboardController?.hide()}),
+                    onDone = { keyboardController?.hide() }),
             )
             Spacer(modifier = Modifier.height(30.dp))
-            datePickerTextView(label = "여행일" ,text = date, datePicker = datePicker)
+            datePickerTextView(label = "여행일", text = date, datePicker = datePicker)
+            Spacer(modifier = Modifier.height(30.dp))
+            Button(
+                onClick = {
+                    if (title.isNotBlank() && date.isNotBlank()) {
+                        val intent = Intent(context, MapActivity::class.java)
+                        intent.putExtra("title", title)
+                        intent.putExtra("date", date)
+                        intent.putExtra("mainId", mainTopicId)
+                        context.startActivity(intent)
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = if (title.isNotBlank() && date.isNotBlank()) Gray else Orenge
+                )
+            ) {
+                Text(text = "위치 설정")
+            }
         }
     }
 }
