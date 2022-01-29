@@ -32,14 +32,15 @@ import android.view.Menu
 import com.todotracks.tdt.MainActivity
 
 import androidx.annotation.NonNull
-
-
-
+import com.google.gson.annotations.SerializedName
+import com.todotracks.tdt.src.map.model.PostSubRequest
+import com.todotracks.tdt.src.map.service.PostSubService
+import com.todotracks.tdt.src.map.service.PostSubView
 
 
 class MapActivity : BaseActivity<ActivityMapBinding>(ActivityMapBinding::inflate),
     OnMapReadyCallback,
-    NaverMap.OnCameraChangeListener, NaverMap.OnCameraIdleListener, SearchView {
+    NaverMap.OnCameraChangeListener, NaverMap.OnCameraIdleListener, SearchView, PostSubView {
     lateinit private var mapView: MapView
     lateinit private var locationSource: FusedLocationSource
     lateinit private var naverMap: NaverMap
@@ -237,8 +238,43 @@ class MapActivity : BaseActivity<ActivityMapBinding>(ActivityMapBinding::inflate
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
     }
 
+    fun infoWindow_present(maker: Marker) {
+        infoWindow!!.setAdapter(object : InfoWindow.DefaultTextAdapter(application) {
+            override fun getText(infoWindow: InfoWindow): CharSequence {
+                return "이 위치로 하기"
+            }
+        })
+
+        //인포창의 우선순위
+        infoWindow!!.setZIndex(10)
+        //투명도 조정
+        infoWindow!!.setAlpha(0.9f)
+        //인포창 표시
+        infoWindow!!.open(maker)
+
+        infoWindow!!.setOnClickListener(Overlay.OnClickListener {
+            marker = maker
+            Log.d("result_address", "result")
+            save_address()
+            false
+        })
+    }
+
+    fun save_address(){
+        var text = getSharedPreferences("tdt", MODE_PRIVATE)
+        var editor = text.edit()
+        var address = getAddress(this, marker.position.latitude, marker.position.longitude)
+//        finish()
+
+        if(title != null && date != null && mainId != null){
+            var reqest = PostSubRequest(mainId!!, title!!,
+                date!!, null,marker.position.latitude, marker.position.latitude, address)
+            PostSubService(this).tryPostSub(reqest)
+        }
+
+    }
+
     override fun onGetSearchSuccess(response: SearchResponse) {
-//        showCustomToast(response)
         search_list.clear()
         list.clear()
         if(response.items.size != 0){
@@ -266,37 +302,11 @@ class MapActivity : BaseActivity<ActivityMapBinding>(ActivityMapBinding::inflate
         TODO("Not yet implemented")
     }
 
-    fun infoWindow_present(maker: Marker) {
-        infoWindow!!.setAdapter(object : InfoWindow.DefaultTextAdapter(application) {
-            override fun getText(infoWindow: InfoWindow): CharSequence {
-                return "이 위치로 하기"
-            }
-        })
-
-        //인포창의 우선순위
-        infoWindow!!.setZIndex(10)
-        //투명도 조정
-        infoWindow!!.setAlpha(0.9f)
-        //인포창 표시
-        infoWindow!!.open(maker)
-
-        infoWindow!!.setOnClickListener(Overlay.OnClickListener {
-            marker = maker
-            Log.d("result_address", "result")
-            save_address()
-            false
-        })
+    override fun onPostSubSuccess(response: Int) {
+        finish()
     }
 
-    fun save_address(){
-
-        var text = getSharedPreferences("tdt", MODE_PRIVATE)
-        var editor = text.edit()
-        editor.putLong("latitude", marker.position.latitude.toLong())
-        editor.putLong("longitude", marker.position.longitude.toLong())
-        var address = getAddress(this, marker.position.latitude, marker.position.longitude)
-        editor.putString("address", address)
-        editor.commit()
-        finish()
+    override fun onPostSubFailure(message: String) {
+        TODO("Not yet implemented")
     }
 }

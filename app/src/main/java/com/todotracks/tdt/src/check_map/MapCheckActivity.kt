@@ -161,11 +161,6 @@ class MapCheckActivity : BaseActivity<ActivityMapCheckBinding>(ActivityMapCheckB
                     infoWindow!!.close()
                 }
             }
-//            showCustomToast("현재 주소 : "+address)
-//            binding.locMainTxt.text = address
-//            binding.locSubTxt.text = address
-//            binding.locMainTxt.setText(address.toString())
-//            binding.locSubTxt.setText(address.toString())
         }
     }
 
@@ -194,7 +189,7 @@ class MapCheckActivity : BaseActivity<ActivityMapCheckBinding>(ActivityMapCheckB
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
 
-        // 선택한 마커의 위치가 가시거리(카메라가 보고있는 위치 반경 3km 내)에 있는지 확인
+        // 선택한 마커의 위치가 가시거리(카메라가 보고있는 위치 반경 1km 내)에 있는지 확인
         const val REFERANCE_LAT = 1 / 109.958489129649955
         const val REFERANCE_LNG = 1 / 88.74
         const val REFERANCE_LAT_X3 = 1 / 109.958489129649955
