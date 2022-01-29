@@ -43,7 +43,7 @@ class UserSettingActivity : BaseActivity<ActivityUserSettingBinding>(ActivityUse
         var editor = text.edit()
         editor.putString("X-MEMBER-NO", userId.toString())
         editor.commit()
-        var intent = Intent(this, MapCheckActivity::class.java)
+        var intent = Intent(this, MapActivity::class.java)
         startActivity(intent)
     }
 
