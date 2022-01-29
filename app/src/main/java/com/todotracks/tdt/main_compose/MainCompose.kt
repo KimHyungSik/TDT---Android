@@ -51,7 +51,7 @@ fun NavigationGraph(navController: NavHostController){
             mainTopicListScreen(navController)
         }
         composable(Screens.MainTopicAddedScreen.url){
-            mainTopicAddedScreen()
+            mainTopicAddedScreen(navController)
         }
     }
 }

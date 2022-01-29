@@ -16,13 +16,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import com.todotracks.tdt.dto.MainTopic
-import com.todotracks.tdt.main_compose.common.Screens
+import com.todotracks.tdt.dto.MainTopicDto
+import com.todotracks.tdt.ui.theme.Gray
 import com.todotracks.tdt.ui.theme.GrayLight
 
 @Composable
-fun MainTopicItem(mainTopic: MainTopic, index: Int, navHostController: NavController) {
+fun MainTopicItem(mainTopicDto: MainTopicDto, index: Int, navHostController: NavController) {
     var show by remember {
         mutableStateOf(false)
     }
@@ -39,7 +38,7 @@ fun MainTopicItem(mainTopic: MainTopic, index: Int, navHostController: NavContro
                 modifier = Modifier.padding(start = 22.dp),
                 text = "$index",
                 textAlign = TextAlign.Center,
-                color = GrayLight,
+                color = Gray,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
             )
@@ -49,8 +48,8 @@ fun MainTopicItem(mainTopic: MainTopic, index: Int, navHostController: NavContro
                     .padding(start = 22.dp)
                     .fillMaxWidth(0.8f)
             ) {
-                Text(text = mainTopic.start_date, color = GrayLight)
-                Text(text = mainTopic.title, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                Text(text = mainTopicDto.start_date, color = Gray)
+                Text(text = mainTopicDto.title, fontSize = 20.sp, fontWeight = FontWeight.Bold)
             }
 
             IconButton(
@@ -64,9 +63,9 @@ fun MainTopicItem(mainTopic: MainTopic, index: Int, navHostController: NavContro
                 )
             }
         }
-        if (!mainTopic.date_list.isNullOrEmpty()) {
+        if (!mainTopicDto.date_list.isNullOrEmpty()) {
             if (show) {
-                for (n in mainTopic.date_list) {
+                for (n in mainTopicDto.date_list) {
                     MainTopicDateList(n, navHostController)
                 }
             }
@@ -80,5 +79,5 @@ fun MainTopicDateList(
     NavController
 ) {
 
-    Text(modifier = Modifier.clickable { navHostController.navigate(Screens.MainTopicAddedScreen.url) },text = n)
+    Text(modifier = Modifier.clickable {  },text = n)
 }
