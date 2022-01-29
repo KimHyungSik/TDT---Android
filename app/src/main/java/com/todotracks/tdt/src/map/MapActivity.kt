@@ -26,8 +26,15 @@ import com.naver.maps.map.overlay.Marker
 import kotlin.collections.ArrayList
 import com.naver.maps.map.overlay.Overlay
 import android.graphics.Color
+import android.util.Log
 import android.view.MenuItem
 import android.view.Menu
+import com.todotracks.tdt.MainActivity
+
+import androidx.annotation.NonNull
+
+
+
 
 
 class MapActivity : BaseActivity<ActivityMapBinding>(ActivityMapBinding::inflate),
@@ -46,11 +53,14 @@ class MapActivity : BaseActivity<ActivityMapBinding>(ActivityMapBinding::inflate
     var list = ArrayList<LatLng>()
 
     // 지도상에 마커 표시
-    val marker1 = Marker()
-    val marker2 = Marker()
-    val marker3 = Marker()
-    val marker4 = Marker()
-    val marker5 = Marker()
+    var marker1 = Marker()
+    var marker2 = Marker()
+    var marker3 = Marker()
+    var marker4 = Marker()
+    var marker5 = Marker()
+
+    // result marker
+    var marker = Marker()
 
     // InfoWindow
     private var infoWindow: InfoWindow? = InfoWindow()
@@ -260,16 +270,23 @@ class MapActivity : BaseActivity<ActivityMapBinding>(ActivityMapBinding::inflate
         //인포창 표시
         infoWindow!!.open(maker)
 
-        infoWindow!!.setOnClickListener {
-            var text = getSharedPreferences("tdt", MODE_PRIVATE)
-            var editor = text.edit()
-            editor.putLong("latitude", maker.position.latitude.toLong())
-            editor.putLong("longitude", maker.position.longitude.toLong())
-            var address = getAddress(this, maker.position.latitude, maker.position.longitude)
-            editor.putString("address", address)
-            editor.commit()
-            finish()
-            true
-        }
+        infoWindow!!.setOnClickListener(Overlay.OnClickListener {
+            marker = maker
+            Log.d("result_address", "result")
+            save_address()
+            false
+        })
+    }
+
+    fun save_address(){
+
+        var text = getSharedPreferences("tdt", MODE_PRIVATE)
+        var editor = text.edit()
+        editor.putLong("latitude", marker.position.latitude.toLong())
+        editor.putLong("longitude", marker.position.longitude.toLong())
+        var address = getAddress(this, marker.position.latitude, marker.position.longitude)
+        editor.putString("address", address)
+        editor.commit()
+        finish()
     }
 }
