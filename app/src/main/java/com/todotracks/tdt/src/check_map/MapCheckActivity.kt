@@ -20,6 +20,23 @@ import java.io.IOException
 import java.util.*
 import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.NaverMapOptions
+import com.naver.maps.map.CameraUpdate
+
+import androidx.annotation.NonNull
+
+import android.R
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
+
+import com.naver.maps.map.MapFragment
+
+import android.widget.EditText
+
+import androidx.appcompat.app.AppCompatActivity
+import com.naver.maps.map.NaverMap.OnCameraChangeListener
+import com.naver.maps.map.overlay.InfoWindow
+import com.naver.maps.map.overlay.InfoWindow.DefaultTextAdapter
 
 
 class MapCheckActivity : BaseActivity<ActivityMapCheckBinding>(ActivityMapCheckBinding::inflate),
@@ -34,6 +51,12 @@ class MapCheckActivity : BaseActivity<ActivityMapCheckBinding>(ActivityMapCheckB
     var mTvPm10: TextView? = null
     var mSido: String? = null
 
+    // 지도상에 마커 표시
+    val marker = Marker()
+
+    // InfoWindow
+    private var infoWindow: InfoWindow? = InfoWindow()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,40 +65,9 @@ class MapCheckActivity : BaseActivity<ActivityMapCheckBinding>(ActivityMapCheckB
         mapView!!.getMapAsync(this)
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
 
-        val cameraPosition = CameraPosition(
-            LatLng(37.50133795399799, 127.02662695566022),  // 대상 지점
-            16.0,  // 줌 레벨
-            0.0,  // 기울임 각도
-            180.0 // 베어링 각도
-        )
-        val options = NaverMapOptions()
-            .camera(cameraPosition)
+        marker.position = LatLng(37.50133795399799, 127.02662695566022)
 
-        // 카메라가 멈출시
-
-
-//         카메라 위치 이동후 경도, 위도
-//        binding.registerBtn.setOnClickListener {
-//            var cameraPosition = naverMap.cameraPosition
-////            var intent = Intent(this, LocationDetailActivity::class.java)
-////            intent.putExtra("location", binding.locMainTxt.text)
-////            intent.putExtra("latitude", cameraPosition.target.latitude.toString())
-////            intent.putExtra("longitude", cameraPosition.target.longitude.toString())
-//            Log.d("position!!","대상 지점 위도: " + cameraPosition.target.latitude + ", " +
-//                    "대상 지점 경도: " + cameraPosition.target.longitude )
-////            startActivity(intent)
-//        }
-
-//        binding.saveBtn.setOnClickListener {
-//            var cameraPosition = naverMap.cameraPosition
-//            var address = getAddress(this, cameraPosition.target.latitude, cameraPosition.target.longitude)
-//            val intent = Intent() //startActivity()를 할것이 아니므로 그냥 빈 인텐트로 만듦
-//            var data = address
-//            intent.putExtra("address", data)
-//            setResult(RESULT_OK, intent)
-//            finish()
-//        }
-
+        mapView.getMapAsync(this)
     }
 
     //위치정보 권한 설정
@@ -100,16 +92,16 @@ class MapCheckActivity : BaseActivity<ActivityMapCheckBinding>(ActivityMapCheckB
         naverMap.locationSource = locationSource
         naverMap.locationTrackingMode = LocationTrackingMode.Follow
 
-        val uiSettings = naverMap.uiSettings
-        uiSettings.isCompassEnabled = true // 나침반
-        uiSettings.isScaleBarEnabled = true // 거리
-        uiSettings.isZoomControlEnabled = true // 줌
-        uiSettings.isLocationButtonEnabled = true // 내가 있는곳
+//        val uiSettings = naverMap.uiSettings
+//        uiSettings.isCompassEnabled = true // 나침반
+//        uiSettings.isScaleBarEnabled = true // 거리
+//        uiSettings.isZoomControlEnabled = true // 줌
+//        uiSettings.isLocationButtonEnabled = true // 내가 있는곳
+        naverMap.uiSettings.isCompassEnabled = true
+        naverMap.uiSettings.isScaleBarEnabled = true
+        naverMap.uiSettings.isZoomControlEnabled = true
+        naverMap.uiSettings.isLocationButtonEnabled = true
 
-        // 지도상에 마커 표시
-        val marker = Marker()
-        marker.position = LatLng(37.50133795399799, 127.02662695566022)
-//        marker.tag = "강남점 : 서울 강남구 강남대로 432 점프밀라노 5층"
         marker.map = naverMap
 
         val cameraPosition = CameraPosition(
@@ -118,6 +110,9 @@ class MapCheckActivity : BaseActivity<ActivityMapCheckBinding>(ActivityMapCheckB
             0.0,  // 기울임 각도
             180.0 // 베어링 각도
         )
+
+        // 마커로 현재 위치 지정
+        naverMap.cameraPosition = cameraPosition
 
         //맵 위치 변경시 리스너
         naverMap.addOnCameraChangeListener(this)
@@ -142,8 +137,19 @@ class MapCheckActivity : BaseActivity<ActivityMapCheckBinding>(ActivityMapCheckB
     override fun onCameraIdle() {
         if (mIsCameraAnimated) {
 //            binding.mark.setImageResource(R.drawable.ic_map_mark_adobespark2)
-//            val cameraPosition = naverMap.getCameraPosition()
-//            var address = getAddress(this, cameraPosition.target.latitude, cameraPosition.target.longitude)
+            val cameraPosition = naverMap.getCameraPosition()
+            var address = getAddress(this, cameraPosition.target.latitude, cameraPosition.target.longitude)
+
+            var result = withinSightMarker(cameraPosition.target,marker.position)
+            showCustomToast(result.toString())
+            if(result == true){
+                infoWindow_present()
+            }
+            else{
+                if(infoWindow != null){
+                    infoWindow!!.close()
+                }
+            }
 //            showCustomToast("현재 주소 : "+address)
 //            binding.locMainTxt.text = address
 //            binding.locSubTxt.text = address
@@ -176,5 +182,39 @@ class MapCheckActivity : BaseActivity<ActivityMapCheckBinding>(ActivityMapCheckB
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1000
+
+        // 선택한 마커의 위치가 가시거리(카메라가 보고있는 위치 반경 3km 내)에 있는지 확인
+        const val REFERANCE_LAT = 1 / 109.958489129649955
+        const val REFERANCE_LNG = 1 / 88.74
+        const val REFERANCE_LAT_X3 = 1 / 109.958489129649955
+        const val REFERANCE_LNG_X3 = 1 / 88.74
+    }
+
+    //  반경 계산기
+    fun withinSightMarker(currentPosition: LatLng, markerPosition: LatLng): Boolean {
+        val withinSightMarkerLat =
+            Math.abs(currentPosition.latitude - markerPosition.latitude) <= REFERANCE_LAT_X3
+        val withinSightMarkerLng =
+            Math.abs(currentPosition.longitude - markerPosition.longitude) <= REFERANCE_LNG_X3
+        return withinSightMarkerLat && withinSightMarkerLng
+    }
+
+    fun infoWindow_present() {
+//        infoWindow!!.setAdapter(object : DefaultTextAdapter(application) {
+//            override fun getText(infoWindow: InfoWindow): CharSequence {
+//                return "마커1위에 표시"
+//            }
+//        })
+
+        // info window custom 연결
+        val adapter = pointAdapter(this@MapCheckActivity, binding.root, true)
+        infoWindow!!.setAdapter(adapter)
+
+        //인포창의 우선순위
+        infoWindow!!.setZIndex(10)
+        //투명도 조정
+        infoWindow!!.setAlpha(0.9f)
+        //인포창 표시
+        infoWindow!!.open(marker)
     }
 }

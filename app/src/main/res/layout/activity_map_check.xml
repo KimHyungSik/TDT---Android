@@ -7,7 +7,8 @@
     <com.naver.maps.map.MapView
         android:id="@+id/map_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:paddingBottom="70dp">
     </com.naver.maps.map.MapView>
 
 <!--    <androidx.constraintlayout.utils.widget.ImageFilterView-->

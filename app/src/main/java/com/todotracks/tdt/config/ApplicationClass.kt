@@ -8,7 +8,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
-// 앱이 실행될때 1번만 실행이 됩니다.x
+// 앱이 실행될때 1번만 실행이 됩니다.
 class ApplicationClass : Application() {
     val API_URL = "http://3.34.99.49:8080"
 
@@ -24,7 +24,7 @@ class ApplicationClass : Application() {
         lateinit var sSharedPreferences: SharedPreferences
 
         // JWT Token Header 키 값
-        val X_ACCESS_TOKEN = "X-ACCESS-TOKEN"
+        val X_ACCESS_TOKEN = "X-MEMBER-NO"
 
         // Retrofit 인스턴스, 앱 실행시 한번만 생성하여 사용합니다.
         lateinit var sRetrofit: Retrofit
@@ -34,7 +34,7 @@ class ApplicationClass : Application() {
     override fun onCreate() {
         super.onCreate()
         sSharedPreferences =
-            applicationContext.getSharedPreferences("SOFTSQUARED_TEMPLATE_APP", MODE_PRIVATE)
+            applicationContext.getSharedPreferences("tdt", MODE_PRIVATE)
         // 레트로핏 인스턴스 생성
         initRetrofitInstance()
     }

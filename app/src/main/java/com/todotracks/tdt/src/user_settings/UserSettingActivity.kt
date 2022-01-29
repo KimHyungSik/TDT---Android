@@ -3,6 +3,7 @@ package com.todotracks.tdt.src.user_settings
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import com.todotracks.tdt.MainActivity
 import com.todotracks.tdt.databinding.ActivityUserSettingBinding
 import com.todotracks.tdt.kotlin.config.BaseActivity
@@ -38,10 +39,11 @@ class UserSettingActivity : BaseActivity<ActivityUserSettingBinding>(ActivityUse
     override fun onPostLoginSuccess(response: loginResponse) {
         var userId = response.member_no
         my_user_Id(userId)
-//        showCustomToast(userId.toString())
-//        var intent = Intent(this, MapActivity::class.java)
-//        startActivity(intent)
-        var intent = Intent(this, MapCheckActivity::class.java)
+        var text = getSharedPreferences("tdt", MODE_PRIVATE)
+        var editor = text.edit()
+        editor.putString("X-MEMBER-NO", userId.toString())
+        editor.commit()
+        var intent = Intent(this, MapActivity::class.java)
         startActivity(intent)
     }
 
