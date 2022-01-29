@@ -57,7 +57,6 @@ class MapCheckActivity : BaseActivity<ActivityMapCheckBinding>(ActivityMapCheckB
     // InfoWindow
     private var infoWindow: InfoWindow? = InfoWindow()
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mapView = binding.mapView
@@ -68,6 +67,10 @@ class MapCheckActivity : BaseActivity<ActivityMapCheckBinding>(ActivityMapCheckB
         marker.position = LatLng(37.50133795399799, 127.02662695566022)
 
         mapView.getMapAsync(this)
+
+        binding.backBtn.setOnClickListener {
+            finish()
+        }
     }
 
     //위치정보 권한 설정

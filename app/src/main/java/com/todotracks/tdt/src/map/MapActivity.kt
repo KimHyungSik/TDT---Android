@@ -92,6 +92,10 @@ class MapActivity : BaseActivity<ActivityMapBinding>(ActivityMapBinding::inflate
 //            setResult(RESULT_OK, intent)
 //            finish()
 //        }
+
+        binding.backBtn.setOnClickListener {
+            finish()
+        }
     }
 
     //위치정보 권한 설정
