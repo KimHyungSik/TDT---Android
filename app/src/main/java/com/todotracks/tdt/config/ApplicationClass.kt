@@ -2,6 +2,7 @@ package com.todotracks.tdt.kotlin.config
 
 import android.app.Application
 import android.content.SharedPreferences
+import com.todotracks.tdt.config.RequestHeaderInterceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -10,7 +11,7 @@ import java.util.concurrent.TimeUnit
 
 // 앱이 실행될때 1번만 실행이 됩니다.
 class ApplicationClass : Application() {
-    val API_URL = "http://3.34.99.49:8080"
+    val API_URL = "http://15.164.36.20:8080"
 
     // 테스트 서버 주소
     // val API_URL = "http://dev-api.test.com/"
@@ -47,6 +48,7 @@ class ApplicationClass : Application() {
             .connectTimeout(5000, TimeUnit.MILLISECONDS)
             // 로그캣에 okhttp.OkHttpClient로 검색하면 http 통신 내용을 보여줍니다.
             .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+            .addInterceptor(RequestHeaderInterceptor())
             .addNetworkInterceptor(XAccessTokenInterceptor()) // JWT 자동 헤더 전송
             .build()
 

@@ -2,7 +2,7 @@ package com.todotracks.tdt.dto
 
 import com.google.gson.annotations.SerializedName
 
-data class MainTopic(
+data class MainTopicDto(
     @SerializedName("date_list")
     val date_list: List<String>,
     @SerializedName("end_date")
