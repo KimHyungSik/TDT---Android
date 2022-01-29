@@ -76,6 +76,8 @@ dependencies {
 
     // okhttp
     implementation 'com.squareup.okhttp3:okhttp:4.9.0'
+    // https://github.com/square/okhttp/tree/master/okhttp-logging-interceptor
+    implementation("com.squareup.okhttp3:logging-interceptor:4.9.0")
 
     // naver map sdk
     implementation 'com.naver.maps:map-sdk:3.12.0'
