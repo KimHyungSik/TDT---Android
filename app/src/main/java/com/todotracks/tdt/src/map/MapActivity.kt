@@ -4,9 +4,10 @@ import android.content.Context
 import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
-import android.util.Log
 import android.widget.TextView
 import android.widget.Toast
+import android.widget.Toolbar
+import androidx.appcompat.app.ActionBar
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapView
 import com.naver.maps.map.NaverMap
@@ -19,20 +20,14 @@ import com.todotracks.tdt.src.map.service.SearchService
 import com.todotracks.tdt.src.map.service.SearchView
 import java.io.IOException
 import java.util.*
-import android.content.Intent
-import android.view.View
-import androidx.annotation.NonNull
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.overlay.InfoWindow
 import com.naver.maps.map.overlay.Marker
-import com.todotracks.tdt.MainActivity
-import com.todotracks.tdt.R
-import com.todotracks.tdt.src.check_map.pointAdapter
 import kotlin.collections.ArrayList
 import com.naver.maps.map.overlay.Overlay
-
-
-
+import android.graphics.Color
+import android.view.MenuItem
+import android.view.Menu
 
 
 class MapActivity : BaseActivity<ActivityMapBinding>(ActivityMapBinding::inflate),
@@ -74,9 +69,7 @@ class MapActivity : BaseActivity<ActivityMapBinding>(ActivityMapBinding::inflate
             }
         }
 
-
         // 카메라가 멈출시
-
 
 //         카메라 위치 이동후 경도, 위도
 //        binding.registerBtn.setOnClickListener {
@@ -255,10 +248,6 @@ class MapActivity : BaseActivity<ActivityMapBinding>(ActivityMapBinding::inflate
                 return "이 위치로 하기"
             }
         })
-
-        // info window custom 연결
-//        val adapter = pointAdapter(this@MapCheckActivity, binding.root, true)
-//        infoWindow!!.setAdapter(adapter)
 
         //인포창의 우선순위
         infoWindow!!.setZIndex(10)
