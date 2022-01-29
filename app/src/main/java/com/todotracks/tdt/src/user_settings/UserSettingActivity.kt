@@ -6,6 +6,7 @@ import android.provider.Settings
 import com.todotracks.tdt.MainActivity
 import com.todotracks.tdt.databinding.ActivityUserSettingBinding
 import com.todotracks.tdt.kotlin.config.BaseActivity
+import com.todotracks.tdt.src.check_map.MapCheckActivity
 import com.todotracks.tdt.src.map.MapActivity
 import com.todotracks.tdt.src.user_settings.model.loginRequest
 import com.todotracks.tdt.src.user_settings.model.loginResponse
@@ -38,7 +39,9 @@ class UserSettingActivity : BaseActivity<ActivityUserSettingBinding>(ActivityUse
         var userId = response.member_no
         my_user_Id(userId)
 //        showCustomToast(userId.toString())
-        var intent = Intent(this, MapActivity::class.java)
+//        var intent = Intent(this, MapActivity::class.java)
+//        startActivity(intent)
+        var intent = Intent(this, MapCheckActivity::class.java)
         startActivity(intent)
     }
 
