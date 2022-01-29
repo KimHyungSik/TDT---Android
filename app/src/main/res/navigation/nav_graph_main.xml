@@ -5,6 +5,6 @@
     app:startDestination="@id/mainTopicListScreen">
     <fragment
         android:id="@+id/mainTopicListScreen"
-        android:name="com.todotracks.tdt.main_topic_list.MainTopicListScreen"
+        android:name="com.todotracks.tdt.main_compose.MainTopicListScreen"
         android:label="MainTopicListScreen" />
 </navigation>
