@@ -9,7 +9,7 @@
     <TextView
         android:id="@+id/map_sub_text"
         android:layout_width="100dp"
-        android:layout_height="30dp"
+        android:layout_height="20dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
