@@ -21,5 +21,7 @@ class MainActivity : AppCompatActivity() {
         binding.composeView.setContent {
             Text(text = "text")
         }
-    }
+    } 
+    
+    
 }
