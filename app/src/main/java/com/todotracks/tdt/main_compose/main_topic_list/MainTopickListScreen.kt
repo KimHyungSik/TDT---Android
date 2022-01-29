@@ -34,12 +34,11 @@ fun mainTopicListScreen(
     vm: MainTopicListViewModel = viewModel()
 ) {
     val fakeMainTopicList = vm.mainTopicList.value
-    vm.getMainTopicList()
     Scaffold(
     ) {
         Column(
             modifier = Modifier
-                .fillMaxHeight()
+                .fillMaxSize()
                 .background(Indigo)
         ) {
             Column(
@@ -58,6 +57,7 @@ fun mainTopicListScreen(
             }
             Card(
                 shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
+                modifier = Modifier.fillMaxSize()
             ) {
                 Column() {
                     Text(
@@ -71,64 +71,9 @@ fun mainTopicListScreen(
                         verticalArrangement = Arrangement.spacedBy(17.dp),
                     ) {
                         itemsIndexed(fakeMainTopicList) { index, mainTopic ->
-                            MainTopicItem(mainTopic, index)
+                            MainTopicItem(mainTopic, index, navController)
                         }
                     }
-                }
-            }
-        }
-    }
-
-
-}
-
-@Composable
-fun MainTopicItem(mainTopic: MainTopic, index: Int) {
-    var show by remember {
-        mutableStateOf(false)
-    }
-    Column {
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .clickable {
-                    show = !show
-                },
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                modifier = Modifier.padding(start = 22.dp),
-                text = "$index",
-                textAlign = TextAlign.Center,
-                color = GrayLight,
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Bold,
-            )
-
-            Column(
-                modifier = Modifier
-                    .padding(start = 22.dp)
-                    .fillMaxWidth(0.8f)
-            ) {
-                Text(text = mainTopic.start_date, color = GrayLight)
-                Text(text = mainTopic.title, fontSize = 20.sp, fontWeight = FontWeight.Bold)
-            }
-
-            IconButton(
-                onClick = { /*TODO*/ },
-            ) {
-                Icon(
-                    Icons.Filled.AddCircle,
-                    contentDescription = "add topic",
-                    tint = Color.Gray,
-                    modifier = Modifier.size(30.dp)
-                )
-            }
-        }
-        if (!mainTopic.date_list.isNullOrEmpty()){
-            if (show) {
-                for (n in mainTopic.date_list) {
-                    Text(text = n)
                 }
             }
         }
