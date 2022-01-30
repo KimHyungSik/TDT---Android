@@ -2,9 +2,6 @@ package com.todotracks.tdt.main_compose.sub_topic_added
 
 import android.app.Activity
 import android.content.Intent
-import android.util.Log
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,19 +20,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.todotracks.tdt.main_compose.common.DatePickerview
+import com.todotracks.tdt.main_compose.common.Screens
 import com.todotracks.tdt.main_compose.component.datePickerTextView
-import com.todotracks.tdt.src.check_map.MapCheckActivity
 import com.todotracks.tdt.src.map.MapActivity
-import com.todotracks.tdt.ui.theme.Indigo
-import androidx.activity.result.contract.ActivityResultContracts.*
 import com.todotracks.tdt.ui.theme.Gray
+import com.todotracks.tdt.ui.theme.Indigo
 import com.todotracks.tdt.ui.theme.Orenge
 
 @ExperimentalComposeUiApi
@@ -52,9 +46,14 @@ fun subTopicAddedScreen(
     var title by remember {
         mutableStateOf("")
     }
+
     val (dateState, datePicker) = DatePickerview()
     var date by remember {
         dateState
+    }
+    if (vm.added.value) {
+        navController.navigate(Screens.MainTopicListScreen.url)
+        vm.setAdded(false)
     }
 
     Column(
@@ -71,7 +70,7 @@ fun subTopicAddedScreen(
                 modifier = Modifier
                     .align(Alignment.TopStart)
                     .padding(5.dp),
-                onClick = { navController.popBackStack() }) {
+                onClick = { navController.navigate(Screens.MainTopicListScreen.url) }) {
                 Icon(
                     Icons.Default.ArrowBack,
                     contentDescription = "ArrowBack",
@@ -122,7 +121,7 @@ fun subTopicAddedScreen(
                     }
                 },
                 colors = ButtonDefaults.buttonColors(
-                    backgroundColor = if (title.isNotBlank() && date.isNotBlank()) Gray else Orenge
+                    backgroundColor = if (title.isNotBlank() && date.isNotBlank()) Orenge else Gray
                 )
             ) {
                 Text(text = "위치 설정")

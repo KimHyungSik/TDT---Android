@@ -1,9 +1,6 @@
 package com.todotracks.tdt.main_compose.main_topic_list
 
-import android.util.Log
-import androidx.compose.animation.*
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.border
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Divider
@@ -12,7 +9,6 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -34,7 +30,11 @@ fun MainTopicItem(mainTopicDto: MainTopicDto, index: Int, navHostController: Nav
     var show by remember {
         mutableStateOf(false)
     }
-    Column {
+
+    val showF: State<Float>
+    Column(
+        modifier = Modifier.animateContentSize()
+    ) {
         Row(
             Modifier
                 .fillMaxWidth()
@@ -96,45 +96,40 @@ fun MainTopicDateList(
 ) {
     var visible by remember { mutableStateOf(true) }
     val density = LocalDensity.current
-    AnimatedVisibility(
-        visible = visible,
-        enter = slideInVertically {
-            with(density) { -40.dp.roundToPx() }
-        } + expandVertically(
-            expandFrom = Alignment.Top
-        ),
-        exit = slideOutVertically() + shrinkVertically() + fadeOut()
+    Column(
+
     ) {
-        Column() {
-            dateList.forEachIndexed { index, s ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            navController.navigate(Screens.SubTopicListScreen.url + "/$mainTopicId/$s/$mainTopicTitle")
+        dateList.forEachIndexed { index, s ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        navController.navigate(Screens.SubTopicListScreen.url + "/$mainTopicId/$s/$mainTopicTitle") {
+                            popUpTo(Screens.MainTopicListScreen.url) {
+                                inclusive = true
+                            }
                         }
-                        .padding(vertical = 8.dp)
-                ) {
-                    Spacer(modifier = Modifier.width(23.dp))
-                    Icon(
-                        Icons.Default.KeyboardArrowRight,
-                        contentDescription = "arrowforward",
-                        tint = GrayLight
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = s
-                    )
-                }
-                if (index < dateList.size - 1)
-                    Divider(
-                        modifier = Modifier.padding(horizontal = 20.dp),
-                        color = GrayLight,
-                        thickness = 1.dp
-                    )
+                    }
+                    .padding(vertical = 8.dp)
+            ) {
+                Spacer(modifier = Modifier.width(23.dp))
+                Icon(
+                    Icons.Default.KeyboardArrowRight,
+                    contentDescription = "arrowforward",
+                    tint = GrayLight
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(
+                    text = s
+                )
             }
+            if (index < dateList.size - 1)
+                Divider(
+                    modifier = Modifier.padding(horizontal = 20.dp),
+                    color = GrayLight,
+                    thickness = 1.dp
+                )
         }
     }
-
 
 }

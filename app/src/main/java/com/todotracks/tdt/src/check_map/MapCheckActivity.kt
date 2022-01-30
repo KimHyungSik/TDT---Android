@@ -6,41 +6,21 @@ import android.location.Geocoder
 import android.os.Bundle
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import com.naver.maps.geometry.LatLng
-import com.naver.maps.map.LocationTrackingMode
-import com.naver.maps.map.MapView
-import com.naver.maps.map.NaverMap
-import com.naver.maps.map.OnMapReadyCallback
+import com.naver.maps.map.*
+import com.naver.maps.map.overlay.InfoWindow
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.FusedLocationSource
-import com.todotracks.tdt.kotlin.config.BaseActivity
-import com.todotracks.tdt.databinding.ActivityMapBinding
+import com.todotracks.tdt.R
 import com.todotracks.tdt.databinding.ActivityMapCheckBinding
-import java.io.IOException
-import java.util.*
-import com.naver.maps.map.CameraPosition
-import com.naver.maps.map.NaverMapOptions
-import com.naver.maps.map.CameraUpdate
-
-import androidx.annotation.NonNull
-
-import android.R
-import android.view.View
-import android.view.ViewGroup
-import android.widget.Button
-
-import com.naver.maps.map.MapFragment
-
-import android.widget.EditText
-
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import com.naver.maps.map.NaverMap.OnCameraChangeListener
-import com.naver.maps.map.overlay.InfoWindow
-import com.naver.maps.map.overlay.InfoWindow.DefaultTextAdapter
+import com.todotracks.tdt.kotlin.config.BaseActivity
 import com.todotracks.tdt.src.check_map.service.PutCheckService
 import com.todotracks.tdt.src.check_map.service.PutCheckView
-import java.security.Permission
+import com.todotracks.tdt.src.map.model.SubTopicCheck
+import kotlinx.coroutines.*
+import java.io.IOException
+import java.util.*
 
 
 class MapCheckActivity : BaseActivity<ActivityMapCheckBinding>(ActivityMapCheckBinding::inflate),
@@ -49,6 +29,7 @@ class MapCheckActivity : BaseActivity<ActivityMapCheckBinding>(ActivityMapCheckB
     lateinit private var mapView: MapView
     lateinit private var locationSource: FusedLocationSource
     lateinit private var naverMap: NaverMap
+    val job = Job()
 
     var mnaverMap: NaverMap? = null
     private var mIsCameraAnimated = false
@@ -57,6 +38,7 @@ class MapCheckActivity : BaseActivity<ActivityMapCheckBinding>(ActivityMapCheckB
 
     var latitude: Double? = null
     var longitude: Double? = null
+    var locationTitle: String? = null
     var result: Boolean = false
 
     // 지도상에 마커 표시
@@ -75,13 +57,14 @@ class MapCheckActivity : BaseActivity<ActivityMapCheckBinding>(ActivityMapCheckB
         extras?.let {
             latitude = extras.getDouble("latitude")
             longitude = extras.getDouble("longitude")
+            locationTitle = extras.getString("title")
         }
         marker.position = LatLng(latitude ?: 37.50133795399799, longitude ?: 127.02662695566022)
 
-//        locationSource.lastLocation.
-//        result = withinSightMarker()
-//        result = withinSightMarker(locationSource.lastLocation.toString())
-
+        binding.checkBtn.setOnClickListener {
+            PutCheckService(this).tryPutCheck(subNo = extras?.getInt("subNo")!!, SubTopicCheck(true))
+            infoWindow_present(true)
+        }
         mapView.getMapAsync(this)
 
         binding.backBtn.setOnClickListener {
@@ -125,16 +108,12 @@ class MapCheckActivity : BaseActivity<ActivityMapCheckBinding>(ActivityMapCheckB
         marker.map = naverMap
         val user_position = naverMap.cameraPosition
 
-
-
         val cameraPosition = CameraPosition(
             marker.position,  // 대상 지점
             16.0,  // 줌 레벨
             0.0,  // 기울임 각도
             180.0 // 베어링 각도
         )
-
-        result = withinSightMarker(user_position.target, cameraPosition.target)
 
         // 마커로 현재 위치 지정
 //        naverMap.cameraPosition = cameraPosition
@@ -166,15 +145,15 @@ class MapCheckActivity : BaseActivity<ActivityMapCheckBinding>(ActivityMapCheckB
             val cameraPosition = naverMap.getCameraPosition()
             var address =
                 getAddress(this, cameraPosition.target.latitude, cameraPosition.target.longitude)
-
-//            result = withinSightMarker(naverMap.locationSource.target, marker.position)
-//            showCustomToast(result.toString())
+            result = withinSightMarker(cameraPosition.target, marker.position)
             if (result == true) {
-                infoWindow_present()
+                infoWindow_present(false)
+                binding.checkBtn.setBackgroundColor(ContextCompat.getColor(this,R.color.orenge))
             } else {
                 if (infoWindow != null) {
                     infoWindow!!.close()
                 }
+                binding.checkBtn.setBackgroundColor(ContextCompat.getColor(this,R.color.blackForText))
             }
         }
     }
@@ -220,7 +199,7 @@ class MapCheckActivity : BaseActivity<ActivityMapCheckBinding>(ActivityMapCheckB
         return withinSightMarkerLat && withinSightMarkerLng
     }
 
-    fun infoWindow_present() {
+    fun infoWindow_present(checked: Boolean) {
 //        infoWindow!!.setAdapter(object : DefaultTextAdapter(application) {
 //            override fun getText(infoWindow: InfoWindow): CharSequence {
 //                return "마커1위에 표시"
@@ -228,7 +207,8 @@ class MapCheckActivity : BaseActivity<ActivityMapCheckBinding>(ActivityMapCheckB
 //        })
 
         // info window custom 연결
-        val adapter = pointAdapter(this@MapCheckActivity, binding.root, true)
+        val adapter = pointAdapter(this@MapCheckActivity, binding.root, checked, locationTitle)
+
         infoWindow!!.setAdapter(adapter)
 
         //인포창의 우선순위
@@ -239,12 +219,17 @@ class MapCheckActivity : BaseActivity<ActivityMapCheckBinding>(ActivityMapCheckB
         infoWindow!!.open(marker)
     }
 
-    override fun onPutCheckSuccess(response: String?) {
+    override fun onPutCheckSuccess(response: Unit) {
 //        PutCheckService(this).tryPutCheck(subNo =)
         finish()
     }
 
-    override fun onPutCheckFailure(message: String) {
+    override fun onPutCheckFailure(message: Unit) {
         finish()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        job.cancel()
     }
 }

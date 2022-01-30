@@ -13,8 +13,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.todotracks.tdt.main_compose.common.Screens
 import com.todotracks.tdt.databinding.FragmentMainTopicListBinding
+import com.todotracks.tdt.main_compose.common.Screens
 import com.todotracks.tdt.main_compose.main_topic_added.mainTopicAddedScreen
 import com.todotracks.tdt.main_compose.main_topic_list.mainTopicListScreen
 import com.todotracks.tdt.main_compose.sub_topic_added.subTopicAddedScreen

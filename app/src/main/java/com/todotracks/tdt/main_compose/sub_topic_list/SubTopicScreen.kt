@@ -2,32 +2,28 @@ package com.todotracks.tdt.main_compose.sub_topic_list
 
 import android.app.Activity
 import android.content.Intent
-import android.util.Log
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -35,11 +31,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.todotracks.tdt.dto.MainTopicDto
 import com.todotracks.tdt.dto.SubTopicDto
-import com.todotracks.tdt.dto.SubTopicsDto
 import com.todotracks.tdt.main_compose.common.Screens
-import com.todotracks.tdt.main_compose.main_topic_list.MainTopicDateList
 import com.todotracks.tdt.src.check_map.MapCheckActivity
 import com.todotracks.tdt.ui.theme.*
 
@@ -51,7 +44,7 @@ fun subTopicScreen(
     mainTopicTitle: String?,
     vm: SubTopicListViewModel = viewModel()
 ) {
-
+    vm.getSubTopics(mainTopicId!!, date!!)
     Box(modifier = Modifier.fillMaxSize()) {
 
         Box(modifier = Modifier.fillMaxSize()) {
@@ -70,7 +63,7 @@ fun subTopicScreen(
                         modifier = Modifier
                             .align(Alignment.TopStart)
                             .padding(5.dp),
-                        onClick = { navController.popBackStack() }) {
+                        onClick = { navController.navigate(Screens.MainTopicListScreen.url) }) {
                         Icon(
                             Icons.Default.ArrowBack,
                             contentDescription = "ArrowBack",
@@ -94,12 +87,25 @@ fun subTopicScreen(
                         .fillMaxHeight()
                         .clip(RoundedCornerShape(topEnd = 20.dp, topStart = 20.dp))
                         .background(Color.White)
-                        .padding(top = 75.dp)
+                        .padding(top = 75.dp),
+                    verticalArrangement = Arrangement.SpaceBetween
                 ) {
                     LazyColumn {
                         itemsIndexed(vm.subTopics.value.sub_topics) { index, subTopic ->
                             SubTopicItem(subTopic, index, navController)
                         }
+                    }
+                    Button(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 30.dp)
+                            .padding(bottom = 20.dp)
+                            .shadow(5.dp),
+                        onClick = {
+                            navController.navigate(Screens.SubTopicAddedScreen.url + "/$mainTopicId/$mainTopicTitle")
+                        },
+                    ) {
+                        Text(text = "여행 추가하기", color = Color.White, fontSize = 20.sp)
                     }
                 }
             }
@@ -112,6 +118,7 @@ fun subTopicScreen(
                 .padding(horizontal = 50.dp)
                 .height(100.dp)
                 .clip(RoundedCornerShape(8.dp))
+                .shadow(5.dp)
                 .background(
                     brush = Brush.linearGradient(
                         colors = listOf(
@@ -123,13 +130,25 @@ fun subTopicScreen(
                     )
                 )
         ) {
-            Text(
-                modifier = Modifier.align(Alignment.Center),
-                text = vm.completeRate.value.toString() + "%",
-                fontSize = 40.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
+            Row(
+                modifier = Modifier.fillMaxSize(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "달성률 : ",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    text = vm.completeRate.value.toString() + "%",
+                    fontSize = 40.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+            }
         }
     }
 }
@@ -143,6 +162,8 @@ fun SubTopicItem(subTopicDto: SubTopicDto, index: Int, navHostController: NavCon
             val intent = Intent(context, MapCheckActivity::class.java)
             intent.putExtra("latitude", subTopicDto.latitude)
             intent.putExtra("longitude", subTopicDto.longitude)
+            intent.putExtra("title", subTopicDto.title)
+            intent.putExtra("subNo", subTopicDto.sub_no)
             context.startActivity(intent)
         }
     )
@@ -170,20 +191,35 @@ fun SubTopicItem(subTopicDto: SubTopicDto, index: Int, navHostController: NavCon
                     text = subTopicDto.title,
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
-                    color = if (subTopicDto.is_complete) GrayLight else Color.Black
+                    color = if (subTopicDto.is_complete) GrayLight else Color.Black,
+                    maxLines = 1
                 )
             }
 
             IconButton(
                 onClick = {
+                    val intent = Intent(context, MapCheckActivity::class.java)
+                    intent.putExtra("latitude", subTopicDto.latitude)
+                    intent.putExtra("longitude", subTopicDto.longitude)
+                    intent.putExtra("title", subTopicDto.title)
+                    intent.putExtra("subNo", subTopicDto.sub_no)
+                    context.startActivity(intent)
                 },
             ) {
-                Icon(
+                if (subTopicDto.is_complete)
+                    Icon(
+                        Icons.Filled.Check,
+                        contentDescription = "add topic",
+                        tint = Color.Green,
+                        modifier = Modifier.size(30.dp)
+                    )
+                else Icon(
                     Icons.Filled.ArrowForward,
                     contentDescription = "add topic",
                     tint = Color.Gray,
                     modifier = Modifier.size(30.dp)
                 )
+
             }
         }
     }

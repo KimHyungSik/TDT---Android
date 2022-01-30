@@ -24,7 +24,7 @@ class SubTopicListViewModel(
     var mainTopicId : Int = savedStateHandle.get<Int>("main_topic_id") ?: 0
 
     init {
-        getSubTopics(mainTopicId, date)
+
     }
 
     fun getSubTopics(mainTopicId : Int, date : String){

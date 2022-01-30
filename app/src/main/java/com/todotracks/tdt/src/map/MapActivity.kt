@@ -4,38 +4,31 @@ import android.content.Context
 import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
+import android.util.Log
+import android.view.KeyEvent
+import android.view.View
 import android.widget.TextView
 import android.widget.Toast
-import android.widget.Toolbar
-import androidx.appcompat.app.ActionBar
+import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.MapView
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
+import com.naver.maps.map.overlay.InfoWindow
+import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.util.FusedLocationSource
-import com.todotracks.tdt.kotlin.config.BaseActivity
 import com.todotracks.tdt.databinding.ActivityMapBinding
+import com.todotracks.tdt.kotlin.config.BaseActivity
+import com.todotracks.tdt.src.map.model.PostSubRequest
 import com.todotracks.tdt.src.map.model.SearchResponse
+import com.todotracks.tdt.src.map.service.PostSubService
+import com.todotracks.tdt.src.map.service.PostSubView
 import com.todotracks.tdt.src.map.service.SearchService
 import com.todotracks.tdt.src.map.service.SearchView
 import java.io.IOException
 import java.util.*
-import com.naver.maps.geometry.LatLng
-import com.naver.maps.map.overlay.InfoWindow
-import com.naver.maps.map.overlay.Marker
 import kotlin.collections.ArrayList
-import com.naver.maps.map.overlay.Overlay
-import android.util.Log
-import com.todotracks.tdt.src.map.model.PostSubRequest
-import com.todotracks.tdt.src.map.service.PostSubService
-import com.todotracks.tdt.src.map.service.PostSubView
-import android.R
-import android.content.Intent
-import android.view.KeyEvent
-import android.view.View
-import android.view.inputmethod.InputMethodManager
-import com.todotracks.tdt.src.check_map.MapCheckActivity
-
 
 class MapActivity : BaseActivity<ActivityMapBinding>(ActivityMapBinding::inflate),
     OnMapReadyCallback,
@@ -89,12 +82,12 @@ class MapActivity : BaseActivity<ActivityMapBinding>(ActivityMapBinding::inflate
         })
 
         binding.searchBtn.setOnClickListener {
-//            var search: String = binding.search.text.toString()
-//            if(search != null){
-//                SearchService(this).tryGetSearch(search)
-//            }
+            var search: String = binding.search.text.toString()
+            if(search != null){
+                SearchService(this).tryGetSearch(search)
+            }
 
-            startActivity(Intent(this, MapCheckActivity::class.java))
+//            startActivity(Intent(this, MapCheckActivity::class.java))
         }
 
         val extras = intent.extras
@@ -281,11 +274,10 @@ class MapActivity : BaseActivity<ActivityMapBinding>(ActivityMapBinding::inflate
 //        finish()
 
         if(title != null && date != null && mainId != null){
-            var reqest = PostSubRequest(mainId!!, title!!,
-                date!!+"T01:00", null, marker.position.latitude.toFloat(), marker.position.latitude.toFloat(), address)
+            val reqest = PostSubRequest(mainId!!, title!!,
+                date!!+"T01:00", "",marker.position.latitude, marker.position.longitude, address)
             PostSubService(this).tryPostSub(reqest)
         }
-
     }
 
     override fun onGetSearchSuccess(response: SearchResponse) {
