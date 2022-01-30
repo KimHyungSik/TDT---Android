@@ -6,6 +6,9 @@
     </style>
 
     <style name="AppTheme.NoActionBar">
+        <item name="colorPrimary">@color/orenge</item>
+        <item name="colorPrimaryVariant">@color/indigo</item>
+        <item name="colorOnPrimary">@color/green_dark</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>

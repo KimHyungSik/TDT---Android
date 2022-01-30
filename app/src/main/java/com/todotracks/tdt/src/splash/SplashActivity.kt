@@ -5,11 +5,13 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
+import com.todotracks.tdt.MainActivity
 import com.todotracks.tdt.databinding.ActivitySplashBinding
 import com.todotracks.tdt.kotlin.config.BaseActivity
-import com.todotracks.tdt.src.user_settings.UserSettingActivity
+import com.todotracks.tdt.src.map.MapActivity
 import com.todotracks.tdt.src.user_settings.model.loginRequest
 import com.todotracks.tdt.src.user_settings.model.loginResponse
+import com.todotracks.tdt.src.user_settings.my_user_Id
 import com.todotracks.tdt.src.user_settings.service.LoginService
 import com.todotracks.tdt.src.user_settings.service.LoginView
 
@@ -26,15 +28,17 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>(ActivitySplashBinding
         LoginService(this).tryPostLogin(loginReq)
 
         Handler(Looper.getMainLooper()).postDelayed({
-            startActivity(Intent(this, UserSettingActivity::class.java))
+            startActivity(Intent(this, MainActivity::class.java))
             finish()
         }, 1500)
     }
 
     override fun onPostLoginSuccess(response: loginResponse) {
+        var userId = response.member_no
+        my_user_Id(userId)
         var text = getSharedPreferences("tdt", MODE_PRIVATE)
         var editor = text.edit()
-        editor.putInt("member_no", response.member_no)
+        editor.putString("X-MEMBER-NO", userId.toString())
         editor.commit()
     }
 
