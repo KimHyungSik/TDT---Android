@@ -25,17 +25,16 @@ import com.naver.maps.map.overlay.InfoWindow
 import com.naver.maps.map.overlay.Marker
 import kotlin.collections.ArrayList
 import com.naver.maps.map.overlay.Overlay
-import android.graphics.Color
 import android.util.Log
-import android.view.MenuItem
-import android.view.Menu
-import com.todotracks.tdt.MainActivity
-
-import androidx.annotation.NonNull
-import com.google.gson.annotations.SerializedName
 import com.todotracks.tdt.src.map.model.PostSubRequest
 import com.todotracks.tdt.src.map.service.PostSubService
 import com.todotracks.tdt.src.map.service.PostSubView
+import android.R
+import android.content.Intent
+import android.view.KeyEvent
+import android.view.View
+import android.view.inputmethod.InputMethodManager
+import com.todotracks.tdt.src.check_map.MapCheckActivity
 
 
 class MapActivity : BaseActivity<ActivityMapBinding>(ActivityMapBinding::inflate),
@@ -76,11 +75,26 @@ class MapActivity : BaseActivity<ActivityMapBinding>(ActivityMapBinding::inflate
         mapView!!.getMapAsync(this)
         locationSource = FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
 
-        binding.searchBtn.setOnClickListener {
-            var search: String = binding.search.text.toString()
-            if(search != null){
-                SearchService(this).tryGetSearch(search)
+        //엔터키 이벤트 처리
+        binding.search.setOnKeyListener(object : View.OnKeyListener {
+            override fun onKey(v: View?, keyCode: Int, event: KeyEvent): Boolean {
+                //Enter key Action
+                if (event.getAction() === KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
+                    var search = binding.search.text.toString()
+                    SearchService(this@MapActivity).tryGetSearch(search)
+                    return true
+                }
+                return false
             }
+        })
+
+        binding.searchBtn.setOnClickListener {
+//            var search: String = binding.search.text.toString()
+//            if(search != null){
+//                SearchService(this).tryGetSearch(search)
+//            }
+
+            startActivity(Intent(this, MapCheckActivity::class.java))
         }
 
         val extras = intent.extras
@@ -268,7 +282,7 @@ class MapActivity : BaseActivity<ActivityMapBinding>(ActivityMapBinding::inflate
 
         if(title != null && date != null && mainId != null){
             var reqest = PostSubRequest(mainId!!, title!!,
-                date!!, null,marker.position.latitude, marker.position.latitude, address)
+                date!!+"T01:00", null, marker.position.latitude.toFloat(), marker.position.latitude.toFloat(), address)
             PostSubService(this).tryPostSub(reqest)
         }
 
@@ -302,11 +316,11 @@ class MapActivity : BaseActivity<ActivityMapBinding>(ActivityMapBinding::inflate
         TODO("Not yet implemented")
     }
 
-    override fun onPostSubSuccess(response: Int) {
+    override fun onPostSubSuccess(response: String?) {
         finish()
     }
 
     override fun onPostSubFailure(message: String) {
-        TODO("Not yet implemented")
+        finish()
     }
 }
