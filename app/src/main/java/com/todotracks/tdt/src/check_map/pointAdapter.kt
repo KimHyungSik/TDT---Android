@@ -16,13 +16,14 @@ class pointAdapter(context: Context, parent: ViewGroup, my_check: Boolean) : Def
     private val mContext: Context
     private val mParent: ViewGroup
     val checked = my_check
+
     override fun getContentView(infoWindow: InfoWindow): View {
         val view: View =
             LayoutInflater.from(mContext).inflate(R.layout.item_point, mParent, false) as View
         val txtTitle = view.findViewById(R.id.map_sub_text) as TextView
         val check_point: CheckBox = view.findViewById(R.id.sub_text_check) as CheckBox
         txtTitle.text = "제주특별자치도청"
-        check_point.isChecked = checked
+        check_point.isChecked = true
         return view
     }
 

@@ -34,14 +34,18 @@ import com.naver.maps.map.MapFragment
 import android.widget.EditText
 
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import com.naver.maps.map.NaverMap.OnCameraChangeListener
 import com.naver.maps.map.overlay.InfoWindow
 import com.naver.maps.map.overlay.InfoWindow.DefaultTextAdapter
+import com.todotracks.tdt.src.check_map.service.PutCheckService
+import com.todotracks.tdt.src.check_map.service.PutCheckView
+import java.security.Permission
 
 
 class MapCheckActivity : BaseActivity<ActivityMapCheckBinding>(ActivityMapCheckBinding::inflate),
     OnMapReadyCallback,
-    NaverMap.OnCameraChangeListener, NaverMap.OnCameraIdleListener {
+    NaverMap.OnCameraChangeListener, NaverMap.OnCameraIdleListener, PutCheckView {
     lateinit private var mapView: MapView
     lateinit private var locationSource: FusedLocationSource
     lateinit private var naverMap: NaverMap
@@ -53,6 +57,7 @@ class MapCheckActivity : BaseActivity<ActivityMapCheckBinding>(ActivityMapCheckB
 
     var latitude: Double? = null
     var longitude: Double? = null
+    var result: Boolean = false
 
     // 지도상에 마커 표시
     val marker = Marker()
@@ -73,6 +78,10 @@ class MapCheckActivity : BaseActivity<ActivityMapCheckBinding>(ActivityMapCheckB
         }
         marker.position = LatLng(latitude ?: 37.50133795399799, longitude ?: 127.02662695566022)
 
+//        locationSource.lastLocation.
+//        result = withinSightMarker()
+//        result = withinSightMarker(locationSource.lastLocation.toString())
+
         mapView.getMapAsync(this)
 
         binding.backBtn.setOnClickListener {
@@ -89,6 +98,7 @@ class MapCheckActivity : BaseActivity<ActivityMapCheckBinding>(ActivityMapCheckB
                 requestCode, permissions, grantResults
             )
         ) {
+            showCustomToast(grantResults.toString())
             return
         }
         super.onRequestPermissionsResult(
@@ -113,6 +123,9 @@ class MapCheckActivity : BaseActivity<ActivityMapCheckBinding>(ActivityMapCheckB
         naverMap.uiSettings.isLocationButtonEnabled = true
 
         marker.map = naverMap
+        val user_position = naverMap.cameraPosition
+
+
 
         val cameraPosition = CameraPosition(
             marker.position,  // 대상 지점
@@ -121,8 +134,10 @@ class MapCheckActivity : BaseActivity<ActivityMapCheckBinding>(ActivityMapCheckB
             180.0 // 베어링 각도
         )
 
+        result = withinSightMarker(user_position.target, cameraPosition.target)
+
         // 마커로 현재 위치 지정
-        naverMap.cameraPosition = cameraPosition
+//        naverMap.cameraPosition = cameraPosition
 
         //맵 위치 변경시 리스너
         naverMap.addOnCameraChangeListener(this)
@@ -152,8 +167,8 @@ class MapCheckActivity : BaseActivity<ActivityMapCheckBinding>(ActivityMapCheckB
             var address =
                 getAddress(this, cameraPosition.target.latitude, cameraPosition.target.longitude)
 
-            var result = withinSightMarker(cameraPosition.target, marker.position)
-            showCustomToast(result.toString())
+//            result = withinSightMarker(naverMap.locationSource.target, marker.position)
+//            showCustomToast(result.toString())
             if (result == true) {
                 infoWindow_present()
             } else {
@@ -222,5 +237,14 @@ class MapCheckActivity : BaseActivity<ActivityMapCheckBinding>(ActivityMapCheckB
         infoWindow!!.setAlpha(0.9f)
         //인포창 표시
         infoWindow!!.open(marker)
+    }
+
+    override fun onPutCheckSuccess(response: String?) {
+//        PutCheckService(this).tryPutCheck(subNo =)
+        finish()
+    }
+
+    override fun onPutCheckFailure(message: String) {
+        finish()
     }
 }

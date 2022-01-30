@@ -7,8 +7,8 @@ data class PostSubRequest(
     @SerializedName("title") var title: String,
     @SerializedName("plan_dt") var plan_dt: String,
     @SerializedName("description") var description: String?,
-    @SerializedName("latitude") var latitude: Double,
-    @SerializedName("longitude") var longitude: Double,
+    @SerializedName("latitude") var latitude: Float,
+    @SerializedName("longitude") var longitude: Float,
     @SerializedName("address") var address: String?
 )
 
